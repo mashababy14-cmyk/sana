@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Sana — A Single-Character Visual Novel</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <!-- Start Screen -->
+    <section id="start-screen" class="screen start-screen active">
+      <div class="start-card">
+        <div class="badge">Visual Novel • 1 Character • 1 Storyline</div>
+        <h1 class="game-title">Sana</h1>
+        <p class="game-subtitle">
+          Three chapters of quiet cafés, rainy afternoons, and choices that shape how close two hearts grow.
+        </p>
+        <div class="start-actions">
+          <button id="btn-new-game" class="btn btn-primary">New Story</button>
+          <button id="btn-continue-game" class="btn btn-secondary" hidden>Continue Saved Story</button>
+        </div>
+        <div class="chapter-select">
+          <div class="chapter-select-label">Jump to Chapter</div>
+          <div id="chapter-select-grid" class="chapter-select-grid"></div>
+        </div>
+        <div class="start-meta">
+          <span>6 Relationship Meters</span>
+          <span>•</span>
+          <span>Chapters 1, 2, 2.5 &amp; 3</span>
+          <span>•</span>
+          <span>48 Photos &amp; Reels</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Game Screen -->
+    <section id="game-screen" class="screen game-screen">
+      <!-- TopBar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <span id="hud-chapter" class="hud-pill">Ch. 1</span>
+          <span id="hud-location" class="hud-pill hud-location">Café</span>
+          <span id="hud-time" class="hud-pill hud-time">Afternoon</span>
+        </div>
+        <div class="top-bar-center">
+          <h2 id="hud-scene-title" class="scene-title">First Spark</h2>
+        </div>
+        <div class="top-bar-right">
+          <button id="btn-toggle-media-fs" class="icon-btn" title="Expand Photo/Video (F)" aria-label="Expand Photo or Video">⤢</button>
+          <button id="btn-toggle-game-fs" class="icon-btn" title="Full Game Fullscreen" aria-label="Full Game Fullscreen">⛶</button>
+          <button id="btn-toggle-meters" class="icon-btn" title="Relationship Meters (M)" aria-label="Relationship Meters">♥</button>
+          <button id="btn-toggle-history" class="icon-btn" title="Dialogue Log (L)" aria-label="Dialogue Log">☰</button>
+          <button id="btn-toggle-settings" class="icon-btn" title="Settings & Save" aria-label="Settings and Save">⚙</button>
+        </div>
+      </header>
+
+      <!-- Main Stage -->
+      <main class="stage">
+        <!-- Background & SceneMedia -->
+        <div id="scene-background" class="scene-background">
+          <div id="scene-media" class="scene-media">
+            <!-- Real photo or graceful fallback portrait rendered here -->
+          </div>
+          <div id="meter-toast-container" class="meter-toast-container" aria-live="polite"></div>
+        </div>
+
+        <!-- Relationship Meters Drawer -->
+        <aside id="meters-panel" class="meters-panel" aria-label="Relationship Meters">
+          <div class="panel-header">
+            <div>
+              <h3 id="meter-char-name">Sana</h3>
+              <span id="meter-overall-status" class="status-badge">পরিচিত (Familiar)</span>
+            </div>
+            <button id="btn-close-meters" class="close-btn" aria-label="Close meters">&times;</button>
+          </div>
+          <div id="meters-list" class="meters-list"></div>
+        </aside>
+
+        <!-- Dialogue & Choices Overlay -->
+        <div class="interaction-layer">
+          <div id="choices-container" class="choices-container" role="group" aria-label="Choices"></div>
+
+          <div id="dialogue-box" class="dialogue-box" role="button" tabindex="0" aria-label="Advance dialogue">
+            <div class="dialogue-header">
+              <span id="speaker-name" class="speaker-name">Sana</span>
+              <span id="emotion-tag" class="emotion-tag">neutral</span>
+            </div>
+            <p id="dialogue-text" class="dialogue-text"></p>
+            <div class="dialogue-footer">
+              <span id="dialogue-progress" class="dialogue-progress">1 / 1</span>
+              <span id="dialogue-hint" class="dialogue-hint">Click or press Space ▸</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </section>
+
+    <!-- Ending Screen -->
+    <section id="ending-screen" class="screen ending-screen">
+      <div class="ending-card">
+        <div id="ending-badge" class="badge">Ending</div>
+        <h1 id="ending-title" class="ending-title"></h1>
+        <p id="ending-description" class="ending-description"></p>
+        <div id="ending-meters-summary" class="ending-meters-summary"></div>
+        <div class="ending-actions">
+          <button id="btn-replay" class="btn btn-primary">Play Again</button>
+          <button id="btn-back-title" class="btn btn-secondary">Title Screen</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dialogue History Modal -->
+    <div id="history-modal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <div class="panel-header">
+          <h3>Story Log</h3>
+          <button id="btn-close-history" class="close-btn" aria-label="Close log">&times;</button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </div>
+    </div>
+
+    <!-- Settings / Save Modal -->
+    <div id="settings-modal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-content modal-sm">
+        <div class="panel-header">
+          <h3>Game Menu</h3>
+          <button id="btn-close-settings" class="close-btn" aria-label="Close menu">&times;</button>
+        </div>
+        <div class="settings-body">
+          <label class="setting-row">
+            <span>Typewriter Speed</span>
+            <select id="setting-text-speed">
+              <option value="30">Slow</option>
+              <option value="18" selected>Normal</option>
+              <option value="6">Fast</option>
+              <option value="0">Instant</option>
+            </select>
+          </label>
+          <div class="settings-actions">
+            <button id="btn-save-now" class="btn btn-primary">Save Progress</button>
+            <button id="btn-restart-story" class="btn btn-danger">Restart Story</button>
+            <button id="btn-exit-title" class="btn btn-secondary">Return to Title</button>
+          </div>
+          <p id="save-feedback" class="save-feedback"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script defer src="js/data/character.js"></script>
+  <script defer src="js/data/locations.js"></script>
+  <script defer src="js/data/contentManifest.js"></script>
+  <script defer src="js/data/script.js"></script>
+  <script defer src="js/store/gameStore.js"></script>
+  <script defer src="js/ui/renderer.js"></script>
+  <script defer src="js/app.js"></script>
+</body>
+</html>
